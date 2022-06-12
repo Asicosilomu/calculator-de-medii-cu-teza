@@ -1,0 +1,194 @@
+<html>
+	<head>
+		<title>Calculator de medii</title>
+		<style type="text/css">
+			* {
+				font-family: sans;
+			};
+
+			table, th, td {
+				border: 1px solid black;
+			}
+		</style>
+		<script type="text/javascript">
+			// le coeud
+			document.addEventListener('DOMContentLoaded', (e) => {
+  				var materii = [];
+				var index_materie = 0;
+				var index_nota = 0;
+
+				function materieNoua() {
+					var contMaterie = document.body.querySelector("#templates").querySelector("#template_materie").cloneNode(true);
+					contMaterie.id = "materie_" + index_materie.toString();
+					index_materie++;
+					contMaterie.querySelector(".ad_nota1").onclick = function() {
+						var contNota = document.body.querySelector("#templates").querySelector("#template_nota").cloneNode(true);
+						contNota.id = "nota_" + index_nota.toString() + "1";
+						index_nota++;
+						this.parentElement.querySelector(".note1").appendChild(contNota);
+					};
+					contMaterie.querySelector(".ad_nota2").onclick = function() {
+						var contNota = document.body.querySelector("#templates").querySelector("#template_nota").cloneNode(true);
+						contNota.id = "nota_" + index_nota.toString() + "2";
+						index_nota++;
+						this.parentElement.querySelector(".note2").appendChild(contNota);
+					};
+					document.body.querySelector("#noteContainer").appendChild(contMaterie);
+				};
+			
+				function calc() {
+					materii = [];
+					var mater = document.body.querySelector("#noteContainer").children;
+					for (let i = 0; i < mater.length; i++) {
+						var noty1 = mater[i].querySelector(".note1").children;
+						var noty2 = mater[i].querySelector(".note2").children;
+						var notlz1 = [];
+						var notlz2 = [];
+						for (let i2 = 0; i2 < noty1.length; i2++) {
+							notlz1.push(noty1[i2].querySelector(".val_nota").value);
+						};
+						for (let i3 = 0; i3 < noty2.length; i3++) {
+							notlz2.push(noty2[i3].querySelector(".val_nota").value);
+						};
+						materii.push([
+							mater[i].querySelector(".nume_materie").value,
+							mater[i].querySelector(".teza_val").checked,
+							notlz1,
+							notlz2,
+							mater[i].querySelector(".nota_teza1").value,
+							mater[i].querySelector(".nota_teza2").value
+						]);
+					};
+					console.log(materii);
+					document.body.querySelector("#rezultat").innerHTML = "";
+					var header = document.createElement("TR");
+					var materit = document.createElement("TD");
+					materit.innerText = "Disciplina";
+					var sem1 = document.createElement("TD");
+					sem1.innerText = "Semestrul I";
+					var sem2 = document.createElement("TD");
+					sem2.innerText = "Semestrul II";
+					var md = document.createElement("TD");
+					md.innerText = "Media";
+					header.appendChild(materit);
+					header.appendChild(sem1);
+					header.appendChild(sem2);
+					header.appendChild(md);
+					document.body.querySelector("#rezultat").appendChild(header);
+					window.sumaMaterii1 = 0;
+					window.sumaMaterii2 = 0;
+					window.materiiListElem = [];
+					var rwo = function() { for (let i = 0; i < materii.length; i++) {
+						var rw = document.createElement("TR");
+						var nume_matr = materii[i][0];
+						var sumasm1 = 0;
+						for (let i2 = 0; i2 < materii[i][2].length; i2++) {
+							sumasm1 = parseFloat(sumasm1) + parseFloat(materii[i][2][i2]);
+						};
+						var sm1 = sumasm1 / materii[i][2].length;
+						if (materii[i][1] == true) {
+							sm1 = sm1 * 3;
+							sm1 = sm1 + parseFloat(materii[i][4]);
+							sm1 = sm1 / 4;
+						};
+						var nume_matrf = document.createElement("TD");
+						nume_matrf.innerText = nume_matr;
+						var sm1f = document.createElement("TD");
+						sm1f.innerText = sm1.toString();
+						var sumasm2 = 0;
+						for (let i3 = 0; i3 < materii[i][3].length; i3++) {
+							sumasm2 = parseFloat(sumasm2) + parseFloat(materii[i][3][i3]);
+						};
+						var sm2 = sumasm2 / materii[i][3].length;
+						if (materii[i][1] == true) {
+							sm2 = sm2 * 3;
+							sm2 = sm2 + parseFloat(materii[i][5]);
+							sm2 = sm2 / 4;
+						};
+						var sm2f = document.createElement("TD");
+						sm2f.innerText = sm2.toString();
+						var med = (sm1 + sm2) / 2;
+						var medf = document.createElement("TD");
+						medf.innerText = med.toString();
+						rw.appendChild(nume_matrf);
+						rw.appendChild(sm1f);
+						rw.appendChild(sm2f);
+						rw.appendChild(medf);
+						window.sumaMaterii1 = window.sumaMaterii1 + sm1;
+						window.sumaMaterii2 = window.sumaMaterii2 + sm2;
+						window.materiiListElem.push(rw);
+					}; }();
+					for (let i6 = 0; i6 < window.materiiListElem.length; i6++) {
+						document.body.querySelector("#rezultat").appendChild(window.materiiListElem[i6]);
+					};
+					var medieSem1 = window.sumaMaterii1 / materii.length;
+					var medieSem2 = window.sumaMaterii2 / materii.length;
+					var msf = document.createElement("TR");
+					var msfdesc = document.createElement("TD");
+					msfdesc.innerText = "Medie semestrială";
+					var ms1f = document.createElement("TD");
+					ms1f.innerText = medieSem1.toString();
+					var ms2f = document.createElement("TD");
+					ms2f.innerText = medieSem2.toString();
+					msf.appendChild(msfdesc);
+					msf.appendChild(ms1f);
+					msf.appendChild(ms2f);
+					document.body.querySelector("#rezultat").appendChild(msf);
+					document.body.querySelector("#generala").innerText = "Media generală: " + ((medieSem1 + medieSem2) / 2).toString();
+				};
+
+				document.body.querySelector("#adg_mat_btn").onclick = materieNoua;
+				document.body.querySelector("#submit").onclick = calc;
+			});
+		</script>
+	</head>
+	<body>
+		<center>
+			<h1><i>Calculator de medii (cu teză)</i></h1>
+			<br class="_lower">
+			<p><b>Introduceți aici notele voastre:</b></p>
+			<div id="noteContainer"></div>
+			<button id="adg_mat_btn">Adaugă materie...</button>
+			<br class="_lower">
+			<br class="_lower">
+			<button id="submit">Calculează-mi mediile!</button>
+			<br class="_lower">
+			<br class="_lower">
+			<table id="rezultat">
+			</table>
+			<br class="_lower">
+			<br class="_lower">
+			<h1 id="generala">Media generală: --</h1>
+		</center>
+		<!-- Șabloane -->
+		<div id="templates" style="display: none;">
+			<div id="template_materie">
+				<p><i>Materie</i></p>
+				<input type="text" placeholder="Nume materie" class="nume_materie">
+				<p><i>Note (semestrul I)</i></p>
+				<div class="note1">
+				</div>
+				<button class="ad_nota1">Adaugă notă...</button>
+				<p><i>Note (semestrul II)</i></p>
+				<div class="note2">
+				</div>
+				<button class="ad_nota2">Adaugă notă...</button>
+				<br class="_lower">
+				<br class="_lower">
+				<input type="checkbox" class="teza_val">
+				<label for="teza_val">Are teză?</label>
+				<p><i>Teză (semestrul I)</i></p>
+				<p>Nota în teză: </p><input type="number" placeholder="10" class="nota_teza1">
+				<p><i>Teză (semestrul II)</i></p>
+				<p>Nota în teză: </p><input type="number" placeholder="10" class="nota_teza2">
+				<br class="_lower">
+				<br class="_lower">
+			</div>
+			<div id="template_nota">
+				Nota: <input type="number" placeholder="10" class="val_nota">
+				<br class="_lower">
+				<br class="_lower">
+			</div>
+		</div>
+	</body>
+</html>
